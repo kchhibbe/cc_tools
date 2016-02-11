@@ -1,30 +1,30 @@
 """
-Data structures for manipulating Chip's Challenge (CC) data
-Created for the class Programming for Game Designers
-"""
+    Data structures for manipulating Chip's Challenge (CC) data
+    Created for the class Programming for Game Designers
+    """
 BYTE_ORDER = "little"
 
 
 class CCField:
     """The base field class
-    Member vars:
+        Member vars:
         type_val (int): the type identifier of this class (set to 3)
         byte_val (bytes): the byte data of the field
-    """
-
+        """
+    
     def __init__(self, type_val, byte_val):
         self.type_val = type
         self.byte_val = byte_val
-
+    
     @property
     def byte_data(self):
         return self.byte_val
-
+    
     def __str__(self):
         return_str = "    Generic Field (type="+self.type_val+")\n"
         return_str += "      data = "+str(self.byte_val)
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
@@ -35,30 +35,30 @@ class CCField:
 
 class CCMapTitleField(CCField):
     """A class defining the map title field
-    Member vars:
+        Member vars:
         type_val (int): the type identifier of this class (set to 3)
         title (string): the title, max length 63 characters
-    """
+        """
     TYPE = 3
-
+    
     def __init__(self, title):
         if __debug__:
             if len(title) >= 64: raise AssertionError("Map Title must be 63 characters or fewer. Current title is '"+title+"'("+str(len(title))+")")
         self.type_val = CCMapTitleField.TYPE
         self.title = title
-
+    
     def __str__(self):
         return_str = "    Map Title Field (type=3)\n"
         return_str += "      title = '"+str(self.title)+"'"
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
         json_field["type"] = self.type_val
         json_field["title"] = self.title
         return json_field
-
+    
     @property
     def byte_data(self):
         title_bytes = b""
@@ -69,21 +69,21 @@ class CCMapTitleField(CCField):
 
 class CCCoordinate:
     """A class defining a single coordinate
-    Member vars:
+        Member vars:
         x (int): x position, a value from 0 to 31
         y (int): y position, a value from 0 to 31
-    """
-
+        """
+    
     def __init__(self, x, y):
         if __debug__:
             if (x<0 or x>31) or (y<0 or y>31):
                 raise AssertionError("Coordinates: ("+str(x)+", "+str(y)+") out of range. Coordinates must be from 0 to 31")
         self.x = x
         self.y = y
-
+    
     def __str__(self):
         return "("+str(self.x)+", "+str(self.y)+")"
-
+    
     @property
     def json_data(self):
         return {"x":self.x, "y":self.y}
@@ -91,24 +91,24 @@ class CCCoordinate:
 
 class CCTrapControl:
     """A class defining a single trap control
-    Member vars:
+        Member vars:
         button_coord (CCCoordinate): the location of the brown button
         trap_coord (CCCoordinate): the location of the trap
-    """
-
+        """
+    
     def __init__(self, bx, by, tx, ty):
         """Traps are defined by a pairs of coordinates (bx, by, tx, ty)
-        Note that all coordinates must be from 0 to 31
-        Args:
+            Note that all coordinates must be from 0 to 31
+            Args:
             bx, by (int, int): the position of the button
             tx, ty (int, int): the position of the trap
-        """
+            """
         self.button_coord = CCCoordinate(bx, by)
         self.trap_coord = CCCoordinate(tx, ty)
-
+    
     def __str__(self):
         return "button"+str(self.button_coord)+", trap"+str(self.trap_coord)
-
+    
     @property
     def json_data(self):
         json_val = {}
@@ -119,24 +119,24 @@ class CCTrapControl:
 
 class CCTrapControlsField(CCField):
     """A class defining the trap controls field
-    Member vars:
+        Member vars:
         type_val (int) : the type identifier of this class (set to 4)
         traps (list of CCTrapControl): a list of traps for the map
-    """
+        """
     TYPE = 4
-
+    
     def __init__(self, traps):
         """A Trap Control Field is defined by a list of traps
-        Note that there is a max of 25 traps per level
-        Args:
+            Note that there is a max of 25 traps per level
+            Args:
             traps (list of CCTrapControl): the traps
-        """
+            """
         if __debug__:
             if len(traps) > 25:
                 raise AssertionError("Max trap count exceeded. Max trap count is 25. Number of traps passed = "+str(len(traps)))
         self.type_val = CCTrapControlsField.TYPE
         self.traps = traps
-
+    
     def __str__(self):
         return_str = "    Trap Controls Field (type=4)\n"
         for trap in self.traps:
@@ -144,7 +144,7 @@ class CCTrapControlsField(CCField):
             if trap != self.traps[-1]:
                 return_str += "\n"
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
@@ -154,7 +154,7 @@ class CCTrapControlsField(CCField):
             traps_data.append(trap.json_data)
         json_field["traps"] = traps_data
         return json_field
-
+    
     @property
     def byte_data(self):
         byte_value = b""
@@ -169,24 +169,24 @@ class CCTrapControlsField(CCField):
 
 class CCCloningMachineControl:
     """A class defining a single cloning machine control
-    Member vars:
+        Member vars:
         button_coord (CCCoordinate): the location of the red button
         machine_coord (CCCoordinate): the location of the cloning machine
-    """
-
+        """
+    
     def __init__(self, bx, by, tx, ty):
         """Cloning Machines are defined by a pairs of coordinates (bx, by, tx, ty)
-        Note that all coordinates must be from 0 to 31
-        Args:
+            Note that all coordinates must be from 0 to 31
+            Args:
             bx, by (int, int): the position of the button
             tx, ty (int, int): the position of the machine
-        """
+            """
         self.button_coord = CCCoordinate(bx, by)
         self.machine_coord = CCCoordinate(tx, ty)
-
+    
     def __str__(self):
         return "button"+str(self.button_coord)+", machine"+str(self.machine_coord)
-
+    
     @property
     def json_data(self):
         json_val = {}
@@ -197,24 +197,24 @@ class CCCloningMachineControl:
 
 class CCCloningMachineControlsField(CCField):
     """A class defining the cloning machine controls field
-    Member vars:
+        Member vars:
         type_val (int) : the type identifier of this class (set to 5)
         machine (list of CCCloningMachineControl): a list of cloning machines for the map
-    """
+        """
     TYPE = 5
-
+    
     def __init__(self, machines):
         """A cloning machine control field is defined by a list of machines
-        Note that there is a max of 31 machines per level
-        Args:
+            Note that there is a max of 31 machines per level
+            Args:
             machines (list of CCCloningMachineControl): the machines
-        """
+            """
         if __debug__:
             if len(machines) > 31:
                 raise AssertionError("Max cloning machine count of 31 exceeded. Number of cloning machines passed = "+str(len(machines)))
         self.type_val = CCCloningMachineControlsField.TYPE
         self.machines = machines
-
+    
     def __str__(self):
         return_str = "    Cloning Machine Controls Field (type=5)\n"
         for machine in self.machines:
@@ -222,7 +222,7 @@ class CCCloningMachineControlsField(CCField):
             if machine != self.machines[-1]:
                 return_str += "\n"
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
@@ -232,7 +232,7 @@ class CCCloningMachineControlsField(CCField):
             machine_data.append(machine.json_data)
         json_field["machines"] = machine_data
         return json_field
-
+    
     @property
     def byte_data(self):
         byte_value = b""
@@ -246,35 +246,35 @@ class CCCloningMachineControlsField(CCField):
 
 class CCEncodedPasswordField(CCField):
     """A class defining an encoded password
-    Member vars:
+        Member vars:
         type_val (int): the type identifier of this class (set to 6)
         password (list of ints): a password encoded as a list of ints from 4 to 9 ints in length
-    """
+        """
     TYPE = 6
-
+    
     def __init__(self, password):
         """Initializes an encoded password
-        Args:
+            Args:
             password (list of ints) : the integer values of an encoded password
-        """
+            """
         if __debug__:
             if len(password) > 9 or len(password) < 4:
                 raise AssertionError("Encoded password must be from 4 to 9 characters in length. Password passed is '"+str(password)+"'")
         self.type_val = CCEncodedPasswordField.TYPE
         self.password = password
-
+    
     def __str__(self):
         return_str = "    Encoded Password Field (type=8)\n"
         return_str += "      password = "+str(self.password)
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
         json_field["type"] = self.type_val
         json_field["password"] = self.password
         return json_field
-
+    
     @property
     def byte_data(self):
         password_bytes = b""
@@ -286,31 +286,31 @@ class CCEncodedPasswordField(CCField):
 
 class CCMapHintField(CCField):
     """A class defining a hint
-    Member vars:
+        Member vars:
         type_val (int): the type identifier of this class (set to 7)
         hint (string): the hint for the level max length 127 characters
-    """
+        """
     TYPE = 7
-
+    
     def __init__(self, hint):
         if __debug__:
             if len(hint) > 127 or len(hint) < 0:
                 raise AssertionError("Hint must be from 0 to 127 characters in length. Hint passed is '"+hint+"'")
         self.type_val = CCMapHintField.TYPE
         self.hint = hint
-
+    
     def __str__(self):
         return_str = "    Map Hint Field (type=7)\n"
         return_str += "      hint = '"+str(self.hint)+"'"
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
         json_field["type"] = self.type_val
         json_field["hint"] = self.hint
         return json_field
-
+    
     @property
     def byte_data(self):
         hint_bytes = b""
@@ -321,32 +321,32 @@ class CCMapHintField(CCField):
 
 class CCPasswordField(CCField):
     """A class defining an unencoded password
-    Member vars:
+        Member vars:
         type_val (int): the type identifier of this class (set to 8)
         password (string): the password string, length from 4 to 9 characters
-    """
+        """
     TYPE = 8
     password = ""
-
+    
     def __init__(self, password):
         if __debug__:
             if len(password) > 9 or len(password) < 4:
                 raise AssertionError("Password must be from 4 to 9 characters in length. Password passed is '"+password+"'")
         self.type_val = CCPasswordField.TYPE
         self.password = password
-
+    
     def __str__(self):
         return_str = "    Password Field (type=8)\n"
         return_str += "      password = '"+str(self.password)+"'"
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
         json_field["type"] = self.type_val
         json_field["password"] = self.password
         return json_field
-
+    
     @property
     def byte_data(self):
         password_bytes = b""
@@ -357,19 +357,19 @@ class CCPasswordField(CCField):
 
 class CCMonsterMovementField(CCField):
     """A class defining the monsters that move in a given level
-    Member vars:
+        Member vars:
         type_val (int): the type identifier of this class (set to 10)
         monsters (list of CCCoordinate): the coordinates of each monster
-    """
+        """
     TYPE = 10
-
+    
     def __init__(self, monsters):
         if __debug__:
             if len(monsters) > 128:
                 raise AssertionError("Max monster count of 128 exceeded. Number of monsters passed = "+str(len(monsters)))
         self.type_val = CCMonsterMovementField.TYPE
         self.monsters = monsters
-
+    
     def __str__(self):
         return_str = "    Monster Movement Field (type=10)\n"
         for monster in self.monsters:
@@ -377,7 +377,7 @@ class CCMonsterMovementField(CCField):
             if monster != self.monsters[-1]:
                 return_str += "\n"
         return return_str
-
+    
     @property
     def json_data(self):
         json_field = {}
@@ -387,7 +387,7 @@ class CCMonsterMovementField(CCField):
             monster_data.append(monster.json_data)
         json_field["monsters"] = monster_data
         return json_field
-
+    
     @property
     def byte_data(self):
         byte_value = b""
@@ -399,16 +399,16 @@ class CCMonsterMovementField(CCField):
 
 class CCLevel:
     """A class defining the data of a single level
-    Member vars:
+        Member vars:
         level_number (int): the sequence number for this level. it corresponds to it's order in the list of levels
         time (int): the time limit in seconds for the level. 0 means no time limit
         num_chips (int): the number of computer chips to be collected in the level
-            Layers: Chip's Challenge maps are 32x32 grids in 2 layers: upper and lower
-            A single map layer is stored as an array of 1024 ints
+        Layers: Chip's Challenge maps are 32x32 grids in 2 layers: upper and lower
+        A single map layer is stored as an array of 1024 ints
         upper_layer (int list): the layer data for the upper (main) layer
         lower_layer (int list): the lower layer data. this allows for objects to be placed under other objects
         optional_fields (list of CCField types): the fields that augment the data of this level. all levels have a title and a password
-    """
+        """
     def __init__(self):
         self.level_number = -1
         self.time = -1
@@ -416,7 +416,7 @@ class CCLevel:
         self.upper_layer = []
         self.lower_layer = []
         self.optional_fields = []
-
+    
     def __str__(self):
         return_str = ""
         return_str += "  Level #"+str(self.level_number)+"\n"
@@ -439,32 +439,32 @@ class CCLevel:
                 return_str += " {0:3d}".format(v)
             return_str += "\n"
         return return_str
-
+    
     def add_field(self, field):
         self.optional_fields.append(field)
 
 
 class CCDataFile:
     """A class defining the data of dat file
-    Member vars:
+        Member vars:
         levels (list of CCLevels): the levels of this dat file
-    """
-
+        """
+    
     def __init__(self):
         self.levels = []
-
+    
     def __str__(self):
         return_str = ""
         return_str += "Level Pack:\n"
         for level in self.levels:
             return_str += str(level)
-
+        
         return return_str
-
+    
     @property
     def level_count(self):
         return len(self.levels)
-
+    
     def add_level(self, level):
         self.levels.append(level)
 
