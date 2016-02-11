@@ -4,7 +4,7 @@ import cc_data
 import cc_dat_utils
 
 
-default_input_json_file = "data/test_input.json"
+default_input_json_file = "data/kchhibbe_cc1.json"
 default_output_json_file = "data/kchhibbe_cc1.dat"
 
 # Reading the JSON data in from the input file
