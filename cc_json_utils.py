@@ -5,7 +5,7 @@ import cc_dat_utils
 
 
 default_input_json_file = "data/kchhibbe_cc1.json"
-default_output_json_file = "data/kchhibbe_cc1.dat"
+default_output_dat_file = "data/kchhibbe_cc1.dat"
 
 # Reading the JSON data in from the input file
 with open(default_input_json_file) as json_file:
@@ -76,4 +76,14 @@ for json_game in json_data:
 
 print(level)
 
-cc_dat_utils.write_cc_data_to_dat(finalData,default_output_json_file)
+if len(sys.argv) == 3:
+    input_json_file = sys.argv[1]
+    output_dat_file = sys.argv[2]
+    print("Using command line args:", input_json_file, output_dat_file)
+else:
+    input_json_file = default_input_json_file
+    output_dat_file = default_output_dat_file
+    print("Unknown command line options. Using default values:", input_json_file, output_dat_file)
+
+
+cc_dat_utils.write_cc_data_to_dat(finalData,output_dat_file)
